@@ -1,0 +1,62 @@
+﻿@model List<Order>
+@{
+    ViewData["Title"] = "Order List";
+}
+
+<h2>Order List</h2>
+
+
+<table class="table table-striped mt-4">
+    <thead>
+        <tr class="bg-warning text-black">
+            <th>Id</th>
+            <th>User Login</th>
+            <th>Name</th>
+            <th>Phone No</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>Zip Code</th>
+            <th>Order Date</th>
+
+            @*<th>Card Type</th>
+            <th>Card Name Holder</th>
+            <th>Card Number</th>
+            <th>Expiration</th>
+            <th>Cvv</th>*@
+            <th>Action</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr class="text-white mt-3 fw-bolder">
+                <td>@order.Id</td>
+                <td>@order.User.UserName</td>
+                <td>@order.Name</td>
+                <td>@order.PhoneNo</td>
+                <td>@order.Email</td>
+                <td>@order.Address</td>
+                <td>@order.City</td>
+                <td>@order.ZipCode</td>
+                <td>@order.OrderDate</td>
+                @*
+            <td>@order.CardType</td>
+            <td>@order.CardName</td>
+            <td>@order.CardNumber</td>
+            <td>@order.Expiration</td>
+            <td>@order.Cvv</td>*@
+
+                <td>
+                    <a asp-action="DeleteOrder" asp-route-id="@order.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

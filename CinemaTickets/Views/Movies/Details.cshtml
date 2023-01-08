@@ -1,0 +1,137 @@
+﻿@model Movie
+
+@{
+    ViewData["Title"] = "Movie details";
+}
+
+@using CinemaTickets.Utility;
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+
+    List<Movie>? movies = HttpContextAccessor.HttpContext.Session.Get<List<Movie>>("movies");
+    Movie? movie = null;
+    if (movies != null)
+    {
+        movie = movies.FirstOrDefault(c => c.Name == Model.Name);
+    }
+
+}
+<div class="row text-black mt-2 p-4">
+    <div class="col-md-8 offset-2">
+        <a class="btn text-white btn-outline-secondary mb-3" asp-action="Index">
+            <i class="bi bi-arrow-left"></i>
+            Back to List
+        </a>
+        
+        <div class="card mb-12">
+            <div class="row g-0">
+                <div class="col-md-12">
+                    <div class="card-header text-black bg-warning">
+                        <p class="card-text">
+                            <h3 class="card-title text-center fw-bolder">
+                                @Model.Name
+                                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                    {
+                                        <div class="float-end ">
+
+                                            <form asp-controller="Movies" asp-action="DeleteConfirmed" asp-route-id="@Model.Name ">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline-danger btn-lg "
+                                                    onclick=" return confirm(&quot;Are sure to remove @Model.Name Movie ?&quot;)">
+                                                    <i class="bi bi-trash text-black fw-bold"></i>
+                                                </button>
+                                            </form>
+
+                                        </div>
+
+                                        <a class="text-black fw-bold " asp-action="Edit" asp-route-id="@Model.Name"><i class="bi bi-pencil-square"></i></a>
+                                    }
+                            </h3>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <img src="@Model.ImageURL" width="100%" alt="@Model.Name">
+                </div>
+                <div class="col-md-8 text-center h4">
+                    <div class="card-body">
+                        <p class="card-text mt-3">@Model.Description</p>
+                        <p class="card-text">
+                            <b>Cinema: </b>
+                            <a asp-controller="Cinemas" asp-action="Details" asp-route-id="@Model.CinemaId">
+                                @Model.Cinema.Name
+                            </a>
+                        </p>
+                        <p class="card-text mt-4">
+                            <b>Producer: </b>
+                            <a asp-controller="Producers" asp-action="Details" asp-route-id="@Model.ProducerId">
+                                @Model.Producer.FullName
+                            </a>
+                        </p>
+                        <p class="card-text mt-4">
+                            <b>Actor: </b>
+                            <a asp-controller="Actors" asp-action="Details" asp-route-id="@Model.ActorId">
+                                @Model.Actor.FullName
+                            </a>
+                            <img class="border-info rounded-circle" src="" style="max-width: 150px" />
+                        </p>
+                        <p class="card-text mt-4"><b>Category: </b>@Model.MovieCategory</p>
+                        <div class="mt-5 p-3 ">
+                        <p class="card-text "><b>Start Date: </b>@Model.StartDate.ToString("dd MMM yy")</p>
+                        <p class="card-text"><b>End Date: </b>@Model.EndDate.ToString("dd MMM yy")</p>
+                        <p class="card-text mt-5 p-5 ">
+                        </div>
+                            <b>Status: </b>
+                            @if (DateTime.Now >= Model.StartDate && DateTime.Now <= Model.EndDate)
+                            {
+                                <span class="badge bg-success text-white">AVAILABLE</span>
+                            }
+                            else if (DateTime.Now > Model.EndDate)
+                            {
+                                <span class="badge bg-danger text-white">EXPIRED</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary text-white">UPCOMING</span>
+                            }
+                        </p>
+                       @* <p class="card-text">
+                            <b>Actors: </b>
+                            <hr />
+                            <div class="row">
+                               
+                                    <div class="column text-center">
+                                        <img class="border-info rounded-circle" src="@Actor.ProfilePictureURL" style="max-width: 150px" />
+                                        <br />
+                                        <a asp-controller="Actors" asp-action="Details" asp-route-id="@actor.ActorId">@actor.Actor.FullName</a>
+                                    </div>
+                                
+                            </div>
+                        </p>*@
+
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card-footer">
+                        <p class="card-text">
+                            <form asp-controller="Home" asp-action="AddToCart" method="post">
+                                <input type="hidden" asp-for="Name" />
+                            @if (movie!=null)
+                            {
+                                 <a class="btn btn-lg btn-danger text-black fw-bolder d-flex justify-content-center align-self-center  @((DateTime.Now > Model.EndDate) ? "disabled" : "")"
+                               asp-controller="Home" asp-action="RemoveFromCart" asp-route-id="@Model.Name"><i class="bi bi-cart-minus"></i> Remove From Cart (Price @Model.Price.ToString("c"))</a>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-lg btn-warning text-black fw-bolder d-flex justify-content-center align-self-center  @((DateTime.Now > Model.EndDate) ? "disabled" : "")">
+                                    <i class="bi bi-cart-plus"></i> Add to Cart (Price @Model.Price.ToString("c"))</button>
+                            }
+                            </form>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

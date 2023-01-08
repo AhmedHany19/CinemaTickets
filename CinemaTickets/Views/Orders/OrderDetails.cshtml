@@ -1,0 +1,39 @@
+﻿@model List<OrderDetail>
+@{
+    ViewData["Title"] = "OrderDetails";
+}
+
+<h2>Order Details</h2>
+
+
+
+
+
+<table class="table table-striped mt-4">
+    <thead>
+        <tr class="bg-warning text-black">
+            <th>Id</th>
+            <th>Order No</th>
+            <th>Movie Name</th>
+            <th>Cinema Name</th>
+            <th>User Login</th>
+           
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr class="text-white mt-3 fw-bolder">
+                <td>@order.Id</td>
+                <td>@order.Order.OrderNo</td>
+                <td>@order.Movie.Name</td>
+                <td>@order.Movie.Cinema.Name</td>
+                <td>@order.User.UserName</td>              
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

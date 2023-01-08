@@ -1,0 +1,150 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "CheckOut";
+}
+@using CinemaTickets.Utility
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+
+    List<Movie>? movies = HttpContextAccessor.HttpContext.Session.Get<List<Movie>>("movies");
+
+    if (movies == null)
+    {
+        movies = new List<Movie>();
+    }
+
+
+}
+<br />
+<h1>CheckOut</h1>
+
+
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <div class="col-md-7">
+                <form asp-action="CheckOut" asp-controller="Home" method="post">
+                   
+                        <div class="section-title">
+                            <h3 class="title">Billing address</h3>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <input class="input form-control form-control-lg" asp-for="Name" type="text" placeholder="Full Name">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group mt-3">
+                            <input class="input form-control form-control-lg" asp-for="PhoneNo" type="tel" placeholder="Phone">
+                            <span asp-validation-for="PhoneNo" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group mt-3">
+                            <input class="input form-control form-control-lg" asp-for="Email" type="email" placeholder="Email">
+                            <span asp-validation-for="Email" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group mt-3">
+                            <input class="input form-control form-control-lg" asp-for="Address" type="text" placeholder="Address">
+                            <span asp-validation-for="Address" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group  mt-3">
+                            <input class="input form-control form-control-lg" asp-for="City" type="text" placeholder="City">
+                            <span asp-validation-for="City" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group  mt-3">
+                            <input class="input form-control form-control-lg" asp-for="ZipCode" type="text" placeholder="ZIP Code">
+                            <span asp-validation-for="ZipCode" class="text-danger"></span>
+
+                        </div>
+                        <h3 class="title">Payment</h3>
+
+                        <div class="form-group mt-3">
+                            <label class="form-label" for="typeText">Card Number</label>
+                            <input type="number" asp-for="CardNumber" id="typeText" class="form-control input form-control-lg" siez="17"
+                                   placeholder="1234 5678 9012 3457" minlength="11" maxlength="19" />
+                            <span asp-validation-for="CardName" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="typeCard">Card Type</label>
+                            <input type="text" asp-for="CardType" id="typeCard" class="form-control form-control-lg" siez="17"
+                                   placeholder="Card Type" />
+                            <span asp-validation-for="CardType" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="typeName">Cardholder's Name</label>
+                            <input type="text" asp-for="CardName" id="typeName" class="form-control form-control-lg" siez="17"
+                                   placeholder="Cardholder's Name" />
+                            <span asp-validation-for="CardName" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="typeExp">Expiration</label>
+                            <input type="text" asp-for="Expiration" id="typeExp" class="form-control form-control-lg" placeholder="MM/YYYY"
+                                   size="7" minlength="7" maxlength="7" />
+                            <span asp-validation-for="Expiration" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="typeText2">Cvv</label>
+                            <input type="password" asp-for="Cvv" id="typeText2" class="form-control form-control-lg"
+                                   placeholder="&#9679;&#9679;&#9679;" size="1" minlength="3" maxlength="3" />
+                            <span asp-validation-for="Cvv" class="text-danger"></span>
+
+                        </div>
+                        <div class="input-checkbox" style="margin-bottom:10px;">
+                            <input type="checkbox" id="terms">
+                            <label for="terms">
+                                <span></span>
+                                I've read and accept the <a href="#">terms & conditions</a>
+                            </label>
+                        </div>
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <input type="submit" value="PlaceOrder" class="btn btn-primary form-control" style="margin-bottom:5px;" />
+                </form>
+            </div>
+                <!--Order Details-->
+
+                <div class="col-5">
+                    <table class="table text-white table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Movie Name</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in movies)
+                            {
+                                <tr>
+                                    <td>@item.Name</td>
+                                    <td>@item.Price</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="text-right">
+                        <h3>Total Price : @movies.Sum(c=>c.Price)</h3>
+                    </div>                   
+                </div>
+                <!--/Order Details-->
+
+
+            
+        </div>
+    </div>
+</div>
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

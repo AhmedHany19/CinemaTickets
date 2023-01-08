@@ -1,0 +1,104 @@
+﻿@using CinemaTickets.Utility;
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    int count = 0;
+    List<Movie>? movies = HttpContextAccessor.HttpContext.Session.Get<List<Movie>>("movies");
+    if (movies == null)
+    {
+        movies = new List<Movie>();
+    }
+    count = movies.Count();
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CinemaTickets</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CinemaTickets.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+    <link href="https://cdn.syncfusion.com/ej2/20.1.55/bootstrap5-dark.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.syncfusion.com/ej2/20.1.55/dist/ej2.min.js"></script>
+
+
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-dark ">
+            <div class="container-fluid ms-3">
+                <a class="navbar-brand text-warning" asp-controller="Movies" asp-action="Index" >CinemaTickets</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active text-warning" asp-controller="Movies" asp-action="Index">Movies</a>
+                        </li>
+                       
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-warning" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Management
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-controller="Actors" asp-action="Index"><i class="bi bi-person-square"></i> Actors</a></li>
+                                <li><a class="dropdown-item" asp-controller="Cinemas" asp-action="Index"><i class="bi bi-camera-reels"></i> Cinemas</a></li>
+                                <li><a class="dropdown-item" asp-controller="Producers" asp-action="Index"><i class="bi bi-headset"></i> Producers</a></li>
+                            </ul>
+                        </li>   
+                        @if (User.IsInRole("Admin"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link active text-warning" asp-controller="Roles" asp-action="Index">Roles</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-warning" asp-controller="Users" asp-action="Index">Users</a>
+                        </li>
+                         <li class="nav-item">
+                            <a class="nav-link active text-warning" asp-controller="Orders" asp-action="Index">Order List</a>
+                        </li>
+                        <li class="nav-item">
+                                <a class="nav-link active text-warning" asp-controller="Orders" asp-action="OrderDetails">Order Details</a>
+                        </li>
+                        }
+                    
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" asp-controller="Home" asp-action="Cart">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    (@count)
+                                </a>
+                            </li>
+                        
+                    </ul>
+                    <form class="d-flex me-3">
+                        <input class="form-control me-2 " type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-warning" type="submit">Search</button>
+                    </form>
+                </div>
+                <partial name="_LoginPartial" />
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+   
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/bootbox.js/bootbox.min.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

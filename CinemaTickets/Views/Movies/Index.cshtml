@@ -1,0 +1,120 @@
+﻿@model MoviesViewModel
+
+@{
+    ViewData["Title"] = "List of Movies";
+}
+
+@using CinemaTickets.Utility;
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+
+    List<Movie>? movies = HttpContextAccessor.HttpContext.Session.Get<List<Movie>>("movies");
+    Movie? movie = null;
+    if (movies != null)
+    {
+        movie = movies.FirstOrDefault(c => c.Name == Model.Movie.Name);
+    }
+
+}
+<div class="row text-black mt-5 ms-3">
+    
+    @foreach (var item in Model.Movies)
+    {
+       
+
+        <div class="col-md-4 col-xs-6 border-primary mb-3">
+            <div class="card mb-3" style="max-width: 550px;">
+                <div class="row g-0">
+                    <div class="col-md-12">
+                        <div class="card-header text-black bg-warning">
+                            <p class="card-text">
+                                <h5 class="card-title">
+                                    @item.Name
+                                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                    {
+                                        <a class="text-black float-end fw-bold" asp-action="Edit" asp-route-id="@item.Name"><i class="bi bi-pencil-square"></i></a>
+                                    }
+                                </h5>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="@item.ImageURL" width="100%" alt="@item.Name">
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-body">
+                            <p class="card-text">@item.Description</p>
+                            <p class="card-text"><b>Cinema: </b>@item.Cinema.Name</p>
+                            <p class="card-text"><b>Category: </b>@item.MovieCategory</p>
+                            <p class="card-text"><b>Start Date: </b>@item.StartDate.ToString("dd MMM yy")</p>
+                            <p class="card-text"><b>End Date: </b>@item.EndDate.ToString("dd MMM yy")</p>
+                            <p class="card-text ">
+                                <b>Status: </b>
+                                @if (DateTime.Now >= item.StartDate && DateTime.Now <= item.EndDate)
+                                {
+                                    <span class="badge bg-success text-white">AVAILABLE</span>
+                                }
+                                else if (DateTime.Now > item.EndDate)
+                                {
+                                    <span class="badge bg-danger text-white">EXPIRED</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary text-white">UPCOMING</span>
+                                }
+                            </p>
+
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card-footer ">
+                            <p class="card-text">
+                                <a class="btn btn-outline-primary float-right" asp-action="Details" asp-route-id="@item.Name">
+                                    <i class="bi bi-eye-fill"></i> Show Details
+                                </a>
+                                <form asp-controller="Home" asp-action="AddToCart" method="post">
+                                 <input type="hidden" name="name" value="@item.Name" />
+                                    @if (movie != null)
+                                    {
+                                         <a class="btn btn-danger text-warning @((DateTime.Now > item.EndDate) ? "disabled" : "")"
+                                              asp-controller="Home" asp-action="RemoveFromCart" asp-route-id="@item.Name">
+                                            <i class="bi bi-cart-plus"></i>Remove From Cart (Price @item.Price.ToString("c"))
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                         <button type="submit" class="btn btn-dark text-warning float-end @((DateTime.Now > item.EndDate) ? "disabled" : "")"
+                                        asp-controller="Home"  asp-action="AddToCart">
+                                            <i class="bi bi-cart-plus"></i> Add to Cart (Price @item.Price.ToString("c"))
+                                        </button>
+                                    }
+                                   
+                                </form>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@await Html.PartialAsync("_CreateItem", "Movies")
+
+@*
+<form asp-controller="Home" asp-action="AddToCart" method="post">
+    <input type="hidden" asp-for="Name" />
+    @if (movie != null)
+    {
+        <a class="btn btn-lg btn-warning text-black fw-bolder d-flex justify-content-center align-self-center  @((DateTime.Now > Model.EndDate) ? "disabled" : "")"
+       asp-controller="Home"
+       asp-action="RemoveFromCart" asp-route-id="@Model.Name"><i class="bi bi-cart-minus"></i> Remove From Cart (Price @Model.Price.ToString("c"))</a>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-lg btn-warning text-black fw-bolder d-flex justify-content-center align-self-center  @((DateTime.Now > Model.EndDate) ? "disabled" : "")">
+            <i class="bi bi-cart-plus"></i> Add to Cart (Price @Model.Price.ToString("c"))
+        </button>
+    }
+</form>*@
